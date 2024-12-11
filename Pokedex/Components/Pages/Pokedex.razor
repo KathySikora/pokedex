@@ -1,22 +1,21 @@
 ﻿@page "/pokedex"
+@inject NavigationManager NavigationManager
 
 <h1>Pokédex</h1>
 
-<p>Click "Load Pokémon" to fetch Pokémon data.</p>
-
-<button class="load-button" @onclick="FetchPokemonData">Load Pokémon</button>
+<input type="text" placeholder="Search Pokémon by name..." @bind="searchTerm" @bind:event="oninput" class="search-box" />
 
 @if (isLoading)
 {
     <p>Loading...</p>
 }
-else if (pokemons.Any())
+else if (SearchedPokemons.Any())
 {
     <div class="card-container">
-        @foreach (var pokemon in pokemons)
+        @foreach (var pokemon in SearchedPokemons)
         {
             <div class="card">
-                <img src="@pokemon.ImageUrl" alt="@pokemon.Name" class="card-img" />
+                <img src="@pokemon.ImageUrl" alt="@pokemon.Name" class="card-img" @onclick="() => ShowPokemonDetails(pokemon)" />
                 <div class="card-content">
                     <h3>@pokemon.Name</h3>
                     <button class="detail-button" @onclick="() => ShowPokemonDetails(pokemon)">Details</button>
@@ -27,7 +26,7 @@ else if (pokemons.Any())
 }
 else
 {
-    <p>No Pokémon data available.</p>
+    <p>No Pokémon match your search.</p>
 }
 
 @code {
@@ -35,14 +34,25 @@ else
     private PokedexService PokedexService { get; set; }
 
     private List<Pokemon> pokemons = new();
+    private string searchTerm = string.Empty;
     private bool isLoading = false;
+
+    private IEnumerable<Pokemon> SearchedPokemons =>
+        string.IsNullOrWhiteSpace(searchTerm)
+            ? pokemons
+            : pokemons.Where(pokemon => pokemon.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchPokemonData();
+    }
 
     private async Task FetchPokemonData()
     {
         isLoading = true;
         try
         {
-            pokemons = await PokedexService.GetPokemonsAsync(1, 10);
+            pokemons = await PokedexService.GetPokemonsAsync();
         }
         catch (Exception ex)
         {
@@ -56,6 +66,6 @@ else
 
     private void ShowPokemonDetails(Pokemon pokemon)
     {
-        Console.WriteLine($"Viewing details for {pokemon.Name}");
+        NavigationManager.NavigateTo($"/pokemon/{pokemon.Id}");
     }
 }

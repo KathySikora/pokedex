@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using Pokedex.Models;
 
 namespace Pokedex.Services
@@ -17,32 +12,42 @@ namespace Pokedex.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<Pokemon>> GetPokemonsAsync(int startId, int count)
+        public async Task<List<Pokemon>> GetPokemonsAsync()
         {
-            var pokemons = new List<Pokemon>();
+            var response = await _httpClient.GetFromJsonAsync<PokemonListResponse>("https://pokeapi.co/api/v2/pokemon?limit=2500&offset=0");
+            if (response?.Results == null) return new List<Pokemon>();
 
-            for (int id = startId; id < startId + count; id++)
+            return response.Results.Select(pokemon =>
             {
-                try
+                var id = ExtractIdFromUrl(pokemon.Url);
+                return new Pokemon
                 {
-                    var response = await _httpClient.GetFromJsonAsync<PokemonResponse>($"https://pokeapi.co/api/v2/pokemon/{id}");
-                    if (response != null)
-                    {
-                        pokemons.Add(new Pokemon
-                        {
-                            Name = response.Name,
-                            ImageUrl = response.Sprites.FrontDefault
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error fetching Pokémon with ID {id}: {ex.Message}");
-                }
-            }
+                    Name = pokemon.Name,
+                    ImageUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{id}.png",
+                    Id = id
+                };
+            }).ToList();
+        }
 
-            return pokemons;
+        public async Task<PokemonDetail> GetPokemonDetailsAsync(int id)
+        {
+            var response = await _httpClient.GetFromJsonAsync<PokemonDetailResponse>($"https://pokeapi.co/api/v2/pokemon/{id}");
+            if (response == null) return null;
+
+            return new PokemonDetail
+            {
+                Name = response.Name,
+                Height = response.Height,
+                Weight = response.Weight,
+                Abilities = response.Abilities.Select(a => a.Ability.Name).ToList(),
+                Types = response.Types.Select(t => t.Type.Name).ToList()
+            };
+        }
+
+        private int ExtractIdFromUrl(string url)
+        {
+            var segments = url.TrimEnd('/').Split('/');
+            return int.Parse(segments.Last());
         }
     }
-
 }

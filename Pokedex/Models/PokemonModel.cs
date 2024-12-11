@@ -7,21 +7,60 @@ using System.Text.Json.Serialization;
 
 namespace Pokedex.Models
 {
-    public class PokemonResponse
+    public class PokemonListResponse
     {
-        public string Name { get; set; } = string.Empty;
-        public Sprites Sprites { get; set; } = new Sprites();
+        public List<PokemonListItem> Results { get; set; } = new List<PokemonListItem>();
     }
 
-    public class Sprites
+    public class PokemonListItem
     {
-        [JsonPropertyName("front_default")]
-        public string FrontDefault { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
     }
 
     public class Pokemon
     {
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
     }
+
+    public class PokemonDetail
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Height { get; set; }
+        public int Weight { get; set; }
+        public List<string> Abilities { get; set; } = new();
+        public List<string> Types { get; set; } = new();
+    }
+
+    public class PokemonDetailResponse
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Height { get; set; }
+        public int Weight { get; set; }
+        public List<AbilitySlot> Abilities { get; set; } = new();
+        public List<TypeSlot> Types { get; set; } = new();
+    }
+
+    public class AbilitySlot
+    {
+        public Ability Ability { get; set; } = new();
+    }
+
+    public class Ability
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class TypeSlot
+    {
+        public Type Type { get; set; } = new();
+    }
+
+    public class Type
+    {
+        public string Name { get; set; } = string.Empty;
+    }
 }
+

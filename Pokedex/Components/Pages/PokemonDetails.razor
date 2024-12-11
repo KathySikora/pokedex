@@ -1,0 +1,45 @@
+﻿@page "/pokemon/{id:int}"
+@inject PokedexService PokedexService
+@inject NavigationManager NavigationManager
+
+<h1>@pokemonDetail?.Name.ToUpper()</h1>
+
+@if (pokemonDetail == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="pokemon-detail-card">
+        <div class="pokemon-header">
+            <img src="@($"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{Id}.png")" alt="@pokemonDetail.Name" />
+        </div>
+        <div class="pokemon-info">
+            <h2>Details</h2>
+            <p><strong>Height:</strong> @pokemonDetail.Height / 10.0 m</p>
+            <p><strong>Weight:</strong> @pokemonDetail.Weight / 10.0 kg</p>
+            <p><strong>Types:</strong> @string.Join(", ", pokemonDetail.Types)</p>
+            <p><strong>Abilities:</strong> @string.Join(", ", pokemonDetail.Abilities)</p>
+        </div>
+        <div class="navigation">
+            <button @onclick="NavigateBack">Back to Pokedex</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private PokemonDetail? pokemonDetail;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pokemonDetail = await PokedexService.GetPokemonDetailsAsync(Id);
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/pokedex");
+    }
+}
