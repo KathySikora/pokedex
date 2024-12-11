@@ -1,7 +1,7 @@
 ﻿@page "/typefilter"
 @inject PokedexService PokedexService
 
-<h1>Filter Pokémon by Type or Ability</h1>
+<h1>Filter Pokémon by Type, Ability, or Size</h1>
 
 <div class="filters">
     <select @onchange="HandleTypeSelection" class="filter-dropdown">
@@ -19,13 +19,16 @@
             <option value="@ability.Name">@ability.Name</option>
         }
     </select>
+
+    <select @onchange="HandleSizeSelection" class="filter-dropdown">
+        <option value="">Select a Size</option>
+        <option value="small">Small (&lt; 1m)</option>
+        <option value="medium">Medium (1-2m)</option>
+        <option value="large">Large (&gt; 2m)</option>
+    </select>
 </div>
 
-@if (isLoadingTypes || isLoadingAbilities)
-{
-    <p>Loading Filters...</p>
-}
-else if (isLoadingPokemons)
+@if (isLoadingPokemons && !filteredPokemons.Any())
 {
     <p>Loading Pokémon...</p>
 }
@@ -43,7 +46,7 @@ else if (filteredPokemons.Any())
         }
     </div>
 }
-else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(selectedAbility))
+else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(selectedAbility) || !string.IsNullOrWhiteSpace(selectedSize))
 {
     <p>No Pokémon found for the selected filter.</p>
 }
@@ -51,23 +54,21 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
 @code {
     private List<PokemonType> types = new();
     private List<PokemonAbility> abilities = new();
+    private List<Pokemon> allPokemons = new();
     private List<Pokemon> filteredPokemons = new();
     private string selectedType = string.Empty;
     private string selectedAbility = string.Empty;
-    private bool isLoadingTypes = true;
-    private bool isLoadingAbilities = true;
-    private bool isLoadingPokemons = false;
+    private string selectedSize = string.Empty;
+    private bool isLoadingPokemons = true;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadFilters();
+        _ = LazyLoadPokemons();
     }
 
     private async Task LoadFilters()
     {
-        isLoadingTypes = true;
-        isLoadingAbilities = true;
-
         try
         {
             var typeTask = PokedexService.GetTypesAsync();
@@ -80,50 +81,82 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
         {
             Console.WriteLine($"Error loading filters: {ex.Message}");
         }
-        finally
-        {
-            isLoadingTypes = false;
-            isLoadingAbilities = false;
-        }
     }
 
-    private async Task HandleTypeSelection(ChangeEventArgs e)
-    {
-        selectedType = e.Value?.ToString() ?? string.Empty;
-        selectedAbility = string.Empty; // Reset ability filter
-        await LoadPokemonsByTypeOrAbility();
-    }
-
-    private async Task HandleAbilitySelection(ChangeEventArgs e)
-    {
-        selectedAbility = e.Value?.ToString() ?? string.Empty;
-        selectedType = string.Empty; // Reset type filter
-        await LoadPokemonsByTypeOrAbility();
-    }
-
-    private async Task LoadPokemonsByTypeOrAbility()
+    private async Task LazyLoadPokemons()
     {
         isLoadingPokemons = true;
-        filteredPokemons.Clear();
 
         try
         {
-            if (!string.IsNullOrWhiteSpace(selectedType))
+            await foreach (var batch in PokedexService.GetPokemonBatchesAsync())
             {
-                filteredPokemons = await PokedexService.GetPokemonsByTypeAsync(selectedType);
-            }
-            else if (!string.IsNullOrWhiteSpace(selectedAbility))
-            {
-                filteredPokemons = await PokedexService.GetPokemonsByAbilityAsync(selectedAbility);
+                allPokemons.AddRange(batch);
+                ApplyCurrentFilters();
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading Pokémon by filter: {ex.Message}");
+            Console.WriteLine($"Error lazy loading Pokémon: {ex.Message}");
         }
         finally
         {
             isLoadingPokemons = false;
         }
     }
+
+    private void HandleTypeSelection(ChangeEventArgs e)
+    {
+        selectedType = e.Value?.ToString() ?? string.Empty;
+        selectedAbility = string.Empty;
+        selectedSize = string.Empty;
+        ApplyCurrentFilters();
+    }
+
+    private void HandleAbilitySelection(ChangeEventArgs e)
+    {
+        selectedAbility = e.Value?.ToString() ?? string.Empty;
+        selectedType = string.Empty;
+        selectedSize = string.Empty;
+        ApplyCurrentFilters();
+    }
+
+    private void HandleSizeSelection(ChangeEventArgs e)
+    {
+        selectedSize = e.Value?.ToString() ?? string.Empty;
+        selectedType = string.Empty;
+        selectedAbility = string.Empty;
+        ApplyCurrentFilters();
+    }
+
+    private void ApplyCurrentFilters()
+    {
+        if (!string.IsNullOrWhiteSpace(selectedType))
+        {
+            filteredPokemons = allPokemons
+                .Where(p => p.Types.Contains(selectedType, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+        }
+        else if (!string.IsNullOrWhiteSpace(selectedAbility))
+        {
+            filteredPokemons = allPokemons
+                .Where(p => p.Abilities.Contains(selectedAbility, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+        }
+        else if (!string.IsNullOrWhiteSpace(selectedSize))
+        {
+            filteredPokemons = selectedSize switch
+            {
+                "small" => allPokemons.Where(p => p.Height < 10).ToList(),
+                "medium" => allPokemons.Where(p => p.Height >= 10 && p.Height <= 20).ToList(),
+                "large" => allPokemons.Where(p => p.Height > 20).ToList(),
+                _ => new List<Pokemon>()
+            };
+        }
+        else
+        {
+            filteredPokemons.Clear();
+        }
+    }
+
 }
