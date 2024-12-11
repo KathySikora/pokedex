@@ -1,0 +1,129 @@
+﻿@page "/typefilter"
+@inject PokedexService PokedexService
+
+<h1>Filter Pokémon by Type or Ability</h1>
+
+<div class="filters">
+    <select @onchange="HandleTypeSelection" class="filter-dropdown">
+        <option value="">Select a Type</option>
+        @foreach (var type in types)
+        {
+            <option value="@type.Name">@type.Name</option>
+        }
+    </select>
+
+    <select @onchange="HandleAbilitySelection" class="filter-dropdown">
+        <option value="">Select an Ability</option>
+        @foreach (var ability in abilities)
+        {
+            <option value="@ability.Name">@ability.Name</option>
+        }
+    </select>
+</div>
+
+@if (isLoadingTypes || isLoadingAbilities)
+{
+    <p>Loading Filters...</p>
+}
+else if (isLoadingPokemons)
+{
+    <p>Loading Pokémon...</p>
+}
+else if (filteredPokemons.Any())
+{
+    <div class="card-container">
+        @foreach (var pokemon in filteredPokemons)
+        {
+            <div class="card">
+                <img src="@pokemon.ImageUrl" alt="@pokemon.Name" class="card-img" />
+                <div class="card-content">
+                    <h3>@pokemon.Name</h3>
+                </div>
+            </div>
+        }
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(selectedAbility))
+{
+    <p>No Pokémon found for the selected filter.</p>
+}
+
+@code {
+    private List<PokemonType> types = new();
+    private List<PokemonAbility> abilities = new();
+    private List<Pokemon> filteredPokemons = new();
+    private string selectedType = string.Empty;
+    private string selectedAbility = string.Empty;
+    private bool isLoadingTypes = true;
+    private bool isLoadingAbilities = true;
+    private bool isLoadingPokemons = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFilters();
+    }
+
+    private async Task LoadFilters()
+    {
+        isLoadingTypes = true;
+        isLoadingAbilities = true;
+
+        try
+        {
+            var typeTask = PokedexService.GetTypesAsync();
+            var abilityTask = PokedexService.GetAbilitiesAsync();
+
+            types = await typeTask;
+            abilities = await abilityTask;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading filters: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingTypes = false;
+            isLoadingAbilities = false;
+        }
+    }
+
+    private async Task HandleTypeSelection(ChangeEventArgs e)
+    {
+        selectedType = e.Value?.ToString() ?? string.Empty;
+        selectedAbility = string.Empty; // Reset ability filter
+        await LoadPokemonsByTypeOrAbility();
+    }
+
+    private async Task HandleAbilitySelection(ChangeEventArgs e)
+    {
+        selectedAbility = e.Value?.ToString() ?? string.Empty;
+        selectedType = string.Empty; // Reset type filter
+        await LoadPokemonsByTypeOrAbility();
+    }
+
+    private async Task LoadPokemonsByTypeOrAbility()
+    {
+        isLoadingPokemons = true;
+        filteredPokemons.Clear();
+
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(selectedType))
+            {
+                filteredPokemons = await PokedexService.GetPokemonsByTypeAsync(selectedType);
+            }
+            else if (!string.IsNullOrWhiteSpace(selectedAbility))
+            {
+                filteredPokemons = await PokedexService.GetPokemonsByAbilityAsync(selectedAbility);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Pokémon by filter: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingPokemons = false;
+        }
+    }
+}

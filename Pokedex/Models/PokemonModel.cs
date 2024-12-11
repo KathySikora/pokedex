@@ -7,12 +7,34 @@ using System.Text.Json.Serialization;
 
 namespace Pokedex.Models
 {
-    public class PokemonListResponse
+    public class TypeListResponse
     {
-        public List<PokemonListItem> Results { get; set; } = new List<PokemonListItem>();
+        public List<TypeItem> Results { get; set; } = new List<TypeItem>();
     }
 
-    public class PokemonListItem
+    public class TypeItem
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+    }
+
+    public class TypeDetailResponse
+    {
+        public List<TypePokemon> Pokemon { get; set; } = new List<TypePokemon>();
+    }
+
+    public class TypePokemon
+    {
+        public NamedApiResource Pokemon { get; set; } = new NamedApiResource();
+    }
+
+    public class NamedApiResource
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+    }
+
+    public class PokemonType
     {
         public string Name { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
@@ -23,6 +45,17 @@ namespace Pokedex.Models
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
+    }
+
+    public class PokemonListResponse
+    {
+        public List<PokemonListItem> Results { get; set; } = new List<PokemonListItem>();
+    }
+
+    public class PokemonListItem
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
     }
 
     public class PokemonDetail
@@ -61,6 +94,33 @@ namespace Pokedex.Models
     public class Type
     {
         public string Name { get; set; } = string.Empty;
+    }
+
+    public class AbilityListResponse
+    {
+        public List<AbilityItem> Results { get; set; } = new List<AbilityItem>();
+    }
+
+    public class AbilityItem
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+    }
+
+    public class AbilityDetailResponse
+    {
+        public List<AbilityPokemon> Pokemon { get; set; } = new List<AbilityPokemon>();
+    }
+
+    public class AbilityPokemon
+    {
+        public NamedApiResource Pokemon { get; set; } = new NamedApiResource();
+    }
+
+    public class PokemonAbility
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
     }
 }
 
