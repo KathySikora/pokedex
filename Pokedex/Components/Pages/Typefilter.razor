@@ -1,7 +1,17 @@
 ﻿@page "/typefilter"
 @inject PokedexService PokedexService
+@inject NavigationManager NavigationManager
 
+@if (isLoading)
+{
+    <p>Loading...</p>
+}else
+{
 <h1>Filter Pokémon by Type, Ability, or Size</h1>
+    <div class="pokedex-navbar">
+        <NavLink class="pokedex-nav-button" href="/pokedex">Pokedex</NavLink>
+        <NavLink class="pokedex-nav-button" href="/typefilter">Filter</NavLink>
+    </div>
 
 <div class="filters">
     <select @onchange="HandleTypeSelection" class="filter-dropdown">
@@ -28,11 +38,7 @@
     </select>
 </div>
 
-@if (isLoadingPokemons && !filteredPokemons.Any())
-{
-    <p>Loading Pokémon...</p>
-}
-else if (filteredPokemons.Any())
+@if (filteredPokemons.Any())
 {
     <div class="card-container">
         @foreach (var pokemon in filteredPokemons)
@@ -41,6 +47,7 @@ else if (filteredPokemons.Any())
                 <img src="@pokemon.ImageUrl" alt="@pokemon.Name" class="card-img" />
                 <div class="card-content">
                     <h3>@pokemon.Name</h3>
+                    <button class="detail-button" @onclick="() => ShowPokemonDetails(pokemon)">Details</button>
                 </div>
             </div>
         }
@@ -50,7 +57,7 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
 {
     <p>No Pokémon found for the selected filter.</p>
 }
-
+}
 @code {
     @inject MetaService MetaService
     private List<TypeItem> types = new();
@@ -61,23 +68,37 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
     private string selectedAbility = string.Empty;
     private string selectedSize = string.Empty;
     private bool isLoadingPokemons = true;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadFilters();
-        _ = LazyLoadPokemons();
-    }
+        isLoading = true;
 
+        var filtersTask = LoadFilters();
+        var loadingDelayTask = Task.Delay(3000);
+
+        _ = LazyLoadPokemons();
+
+        await Task.WhenAll(filtersTask, loadingDelayTask);
+
+        isLoading = false;
+    }
     private async Task LoadFilters()
     {
         try
         {
+           
             types = await MetaService.GetTypesAsync();
             abilities = await MetaService.GetAbilitiesAsync();
+            
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading filters: {ex.Message}");
+        }
+        finally
+        {
+            
         }
     }
 
@@ -107,7 +128,6 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
     {
         selectedType = e.Value?.ToString() ?? string.Empty;
 
-        // Reset other filters
         selectedAbility = string.Empty;
         selectedSize = string.Empty;
 
@@ -118,7 +138,6 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
     {
         selectedAbility = e.Value?.ToString() ?? string.Empty;
 
-        // Reset other filters
         selectedType = string.Empty;
         selectedSize = string.Empty;
 
@@ -129,7 +148,6 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
     {
         selectedSize = e.Value?.ToString() ?? string.Empty;
 
-        // Reset other filters
         selectedType = string.Empty;
         selectedAbility = string.Empty;
 
@@ -164,5 +182,10 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
         {
             filteredPokemons.Clear();
         }
+    }
+
+    private void ShowPokemonDetails(Pokemon pokemon)
+    {
+        NavigationManager.NavigateTo($"/pokemon/{pokemon.Id}");
     }
 }

@@ -1,32 +1,22 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Pokedex</a>
+﻿<div class="pokedex-navbar">
+    <div class="pokedex-header">
+        <a class="navbar-brand" href="/pokedex">Pokedex</a>
     </div>
-</div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+    <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="pokedex">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Pokedex
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="typefilter">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Filter
-            </NavLink>
-        </div>
-    </nav>
+    <div class="pokedex-nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+        <nav class="pokedex-nav flex-column">
+            <div class="pokedex-nav-item">
+                <NavLink class="pokedex-nav-link" href="pokedex">
+                    <span class="pokedex-icon" aria-hidden="true"></span> Pokedex
+                </NavLink>
+            </div>
+            <div class="pokedex-nav-item">
+                <NavLink class="pokedex-nav-link" href="typefilter">
+                    <span class="pokedex-icon" aria-hidden="true"></span> Filter
+                </NavLink>
+            </div>
+        </nav>
+    </div>
 </div>

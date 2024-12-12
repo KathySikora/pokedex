@@ -1,7 +1,12 @@
 ﻿@page "/pokedex"
+@page "/"
 @inject NavigationManager NavigationManager
 
-<h1>Pokédex</h1>
+<h1>Pokédex</h1>  
+<div class="pokedex-navbar">
+    <NavLink class="pokedex-nav-button" href="/pokedex">Pokedex</NavLink>
+    <NavLink class="pokedex-nav-button" href="/typefilter">Filter</NavLink>
+</div>
 
 <input type="text" placeholder="Search Pokémon by name..." @bind="searchTerm" @bind:event="oninput" class="search-box" />
 

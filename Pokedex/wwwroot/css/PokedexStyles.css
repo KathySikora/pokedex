@@ -1,4 +1,84 @@
 ﻿/* General styles */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Verdana', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 15px 0;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #ff8544;
+}
+
+/* Überschrift */
+.pokedex-title {
+    font-family: 'Arial', sans-serif;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #4A148C; /* Lila */
+}
+
+/* Navbar */
+.pokedex-navbar {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.pokedex-nav-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #7E57C2;
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+    .pokedex-nav-button:hover {
+        background-color: #5E35B1;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .pokedex-nav-button:active {
+        background-color: #311B92;
+        color: white;
+        transform: translateY(2px);
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+/* Suchfeld */
+.search-box {
+    display: block;
+    margin: 0 auto 20px;
+    padding: 10px 15px;
+    width: 50%;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s;
+}
+
+    .search-box:focus {
+        border-color: #7E57C2; 
+        outline: none;
+    }
+
+
 .load-button {
     padding: 10px 20px;
     font-size: 16px;
@@ -50,7 +130,6 @@
         color: #333;
     }
 
-/* Detail Card Styling */
 .pokemon-detail-card {
     max-width: 500px;
     margin: 20px auto;
@@ -63,7 +142,7 @@
 }
 
 .pokemon-header {
-    background-color: #4CAF50;
+    background-color: #9de0a0;
     text-align: center;
     padding: 20px;
     color: white;
@@ -113,20 +192,6 @@
     margin: 20px 0;
 }
 
-    .navigation button {
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: #007BFF;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-        .navigation button:hover {
-            background-color: #0056b3;
-        }
-
 .filters {
     display: flex;
     justify-content: center;
@@ -159,3 +224,27 @@
     padding: 10px;
     background-color: #fff;
 }
+
+/* Styling für den Details-Button */
+.detail-button {
+    background-color: transparent; /* Transparenter Hintergrund */
+    color: black; 
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 2px solid black; /* Lila Umrandung */
+    border-radius: 10px;
+    padding: 5px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Dezenter Schatten */
+}
+
+    /* Hover-Effekt */
+    .detail-button:hover {
+        background-color: black; /* Lila Hintergrund */
+        color: white; /* Weiße Schrift */
+        transform: scale(1.05); /* Leichtes Vergrößern */
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Schatten */
+    }
