@@ -18,6 +18,8 @@ namespace Pokedex
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddHttpClient();
             builder.Services.AddScoped<PokedexService>();
+            builder.Services.AddScoped<FilterService>();
+            builder.Services.AddScoped<MetaService>();
 
 
 #if DEBUG

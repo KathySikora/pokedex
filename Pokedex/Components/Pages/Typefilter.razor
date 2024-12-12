@@ -8,7 +8,7 @@
         <option value="">Select a Type</option>
         @foreach (var type in types)
         {
-            <option value="@type.Name">@type.Name</option>
+            <option value="@type.Name" selected="@(selectedType == type.Name ? "selected" : null)">@type.Name</option>
         }
     </select>
 
@@ -16,15 +16,15 @@
         <option value="">Select an Ability</option>
         @foreach (var ability in abilities)
         {
-            <option value="@ability.Name">@ability.Name</option>
+            <option value="@ability.Name" selected="@(selectedAbility == ability.Name ? "selected" : null)">@ability.Name</option>
         }
     </select>
 
     <select @onchange="HandleSizeSelection" class="filter-dropdown">
         <option value="">Select a Size</option>
-        <option value="small">Small (&lt; 1m)</option>
-        <option value="medium">Medium (1-2m)</option>
-        <option value="large">Large (&gt; 2m)</option>
+        <option value="small" selected="@(selectedSize == "small" ? "selected" : null)">Small (&lt; 1m)</option>
+        <option value="medium" selected="@(selectedSize == "medium" ? "selected" : null)">Medium (1-2m)</option>
+        <option value="large" selected="@(selectedSize == "large" ? "selected" : null)">Large (&gt; 2m)</option>
     </select>
 </div>
 
@@ -52,8 +52,9 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
 }
 
 @code {
-    private List<PokemonType> types = new();
-    private List<PokemonAbility> abilities = new();
+    @inject MetaService MetaService
+    private List<TypeItem> types = new();
+    private List<AbilityItem> abilities = new();
     private List<Pokemon> allPokemons = new();
     private List<Pokemon> filteredPokemons = new();
     private string selectedType = string.Empty;
@@ -71,11 +72,8 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
     {
         try
         {
-            var typeTask = PokedexService.GetTypesAsync();
-            var abilityTask = PokedexService.GetAbilitiesAsync();
-
-            types = await typeTask;
-            abilities = await abilityTask;
+            types = await MetaService.GetTypesAsync();
+            abilities = await MetaService.GetAbilitiesAsync();
         }
         catch (Exception ex)
         {
@@ -108,24 +106,33 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
     private void HandleTypeSelection(ChangeEventArgs e)
     {
         selectedType = e.Value?.ToString() ?? string.Empty;
+
+        // Reset other filters
         selectedAbility = string.Empty;
         selectedSize = string.Empty;
+
         ApplyCurrentFilters();
     }
 
     private void HandleAbilitySelection(ChangeEventArgs e)
     {
         selectedAbility = e.Value?.ToString() ?? string.Empty;
+
+        // Reset other filters
         selectedType = string.Empty;
         selectedSize = string.Empty;
+
         ApplyCurrentFilters();
     }
 
     private void HandleSizeSelection(ChangeEventArgs e)
     {
         selectedSize = e.Value?.ToString() ?? string.Empty;
+
+        // Reset other filters
         selectedType = string.Empty;
         selectedAbility = string.Empty;
+
         ApplyCurrentFilters();
     }
 
@@ -158,5 +165,4 @@ else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(
             filteredPokemons.Clear();
         }
     }
-
 }

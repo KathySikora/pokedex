@@ -4,42 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using Pokedex.Models;
 
 namespace Pokedex.Models
 {
-    public class TypeListResponse
-    {
-        public List<TypeItem> Results { get; set; } = new List<TypeItem>();
-    }
-
-    public class TypeItem
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
-    }
-
-    public class TypeDetailResponse
-    {
-        public List<TypePokemon> Pokemon { get; set; } = new List<TypePokemon>();
-    }
-
-    public class TypePokemon
-    {
-        public NamedApiResource Pokemon { get; set; } = new NamedApiResource();
-    }
-
-    public class NamedApiResource
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
-    }
-
-    public class PokemonType
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
-    }
-
     public class Pokemon
     {
         public int Id { get; set; }
@@ -49,18 +17,6 @@ namespace Pokedex.Models
         public List<string> Abilities { get; set; } = new();
         public int Height { get; set; }
         public int Weight { get; set; }
-    }
-
-
-    public class PokemonListResponse
-    {
-        public List<PokemonListItem> Results { get; set; } = new List<PokemonListItem>();
-    }
-
-    public class PokemonListItem
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
     }
 
     public class PokemonDetail
@@ -81,51 +37,14 @@ namespace Pokedex.Models
         public List<TypeSlot> Types { get; set; } = new();
     }
 
-    public class AbilitySlot
+    public class PokemonListResponse
     {
-        public Ability Ability { get; set; } = new();
+        public List<PokemonListItem> Results { get; set; } = new();
     }
 
-    public class Ability
-    {
-        public string Name { get; set; } = string.Empty;
-    }
-
-    public class TypeSlot
-    {
-        public Type Type { get; set; } = new();
-    }
-
-    public class Type
-    {
-        public string Name { get; set; } = string.Empty;
-    }
-
-    public class AbilityListResponse
-    {
-        public List<AbilityItem> Results { get; set; } = new List<AbilityItem>();
-    }
-
-    public class AbilityItem
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
-    }
-
-    public class AbilityDetailResponse
-    {
-        public List<AbilityPokemon> Pokemon { get; set; } = new List<AbilityPokemon>();
-    }
-
-    public class AbilityPokemon
-    {
-        public NamedApiResource Pokemon { get; set; } = new NamedApiResource();
-    }
-
-    public class PokemonAbility
+    public class PokemonListItem
     {
         public string Name { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
     }
 }
-
