@@ -53,9 +53,9 @@
         }
     </div>
 }
-else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(selectedAbility) || !string.IsNullOrWhiteSpace(selectedSize))
+else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(selectedAbility) || !string.IsNullOrWhiteSpace(selectedSize) && isLoadingPokemons)
 {
-    <p>No Pokémon found for the selected filter.</p>
+    <p>Sorry, loading takes longer than anticipated. Thank you for your patience</p>
 }
 }
 @code {
