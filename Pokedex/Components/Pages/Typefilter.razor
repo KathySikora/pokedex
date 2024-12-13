@@ -55,8 +55,12 @@
 }
 else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(selectedAbility) || !string.IsNullOrWhiteSpace(selectedSize) && isLoadingPokemons)
 {
-    <p>Sorry, loading takes longer than anticipated. Thank you for your patience</p>
-}
+        <p>Sorry, loading takes longer than anticipated. Thank you for your patience!</p>
+    }
+    else if (!string.IsNullOrWhiteSpace(selectedType) || !string.IsNullOrWhiteSpace(selectedAbility) || !string.IsNullOrWhiteSpace(selectedSize) && !isLoadingPokemons)
+    {
+        <p>Sorry, there are no pokemon for this filter.</p>
+    }
 }
 @code {
     @inject MetaService MetaService

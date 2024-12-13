@@ -73,7 +73,7 @@ namespace Pokedex.Services
             return pokemons;
         }
 
-        public async IAsyncEnumerable<List<Pokemon>> GetPokemonBatchesAsync(int batchSize = 100)
+        public async IAsyncEnumerable<List<Pokemon>> GetPokemonBatchesAsync(int batchSize = 20)
         {
             var response = await _httpClient.GetFromJsonAsync<PokemonListResponse>("https://pokeapi.co/api/v2/pokemon?limit=2500&offset=0");
             if (response?.Results == null) yield break;
